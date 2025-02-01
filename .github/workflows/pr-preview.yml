@@ -32,28 +32,31 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      # 5️⃣ Ensure dist/ directory exists
+      # 5️⃣ Debug: List `dist/` contents before uploading
+      - name: List contents of `dist/`
+        run: ls -la dist
+
+      # 6️⃣ Ensure `dist/` exists before uploading
       - name: Ensure dist directory exists
         run: mkdir -p dist
 
-      # 6️⃣ Copy index.html from `src/` to `dist/` for GitHub Pages
+      # 7️⃣ Copy index.html from `src/` to `dist/` for GitHub Pages
       - name: Copy index.html to dist/
         run: cp src/index.html dist/index.html
 
-      # 7️⃣ Configure GitHub Pages
+      # 8️⃣ Configure GitHub Pages
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v3
 
-      # 8️⃣ Upload the build output (`dist/`) as an artifact
+      # 9️⃣ Upload the build output (`dist/`) as an artifact
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'dist'
           name: 'site-artifact'
 
-      # 9️⃣ Deploy the preview to GitHub Pages
+      # 🔟 Deploy the preview to GitHub Pages
       - name: Deploy to GitHub Pages (Preview Mode)
         uses: actions/deploy-pages@v3
         with:
           artifact_name: 'site-artifact'
-          preview: true
