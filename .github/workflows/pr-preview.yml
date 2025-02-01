@@ -39,23 +39,27 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v3
 
-      # 7. Upload the built site (dist/) as the artifact named "github-pages"
+      # 7. Create a unique artifact name based on branch
+      - name: Set unique artifact name
+        run: echo "ARTIFACT_NAME=github-pages-${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+
+      # 8. Upload the built site (dist/) as a branch-specific artifact
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
-          name: github-pages
+          name: ${{ env.ARTIFACT_NAME }}
 
-      # 8. Deploy the uploaded artifact to GitHub Pages (Preview Mode)
+      # 9. Deploy the uploaded artifact to GitHub Pages (Preview Mode) with a unique identifier
       - name: Deploy to GitHub Pages (Preview)
         id: deployment
         uses: actions/deploy-pages@v4
         with:
-          artifact_name: github-pages
+          artifact_name: ${{ env.ARTIFACT_NAME }}
           preview: true
 
-      # 9. Write the deployment URL to the job summary
+      # 10. Write the unique deployment URL to the job summary
       - name: Write deployment URL to job summary
         run: |
           echo "## Pages Preview Deployment" >> $GITHUB_STEP_SUMMARY
-          echo "[View Deployment](${{ steps.deployment.outputs.page_url }})" >> $GITHUB_STEP_SUMMARY
+          echo "[View Deployment](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-preview/${{ github.head_ref }}/)" >> $GITHUB_STEP_SUMMARY
