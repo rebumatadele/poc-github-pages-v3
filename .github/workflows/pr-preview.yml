@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: 16
 
-      # 3. Install dependencies using legacy peer deps to avoid conflicts
+      # 3. Install dependencies (using legacy peer deps to avoid conflicts)
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
@@ -32,7 +32,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 5. Copy index.html from src/ to dist/ (so Pages finds it)
+      # 5. Copy index.html from src/ to dist/ (so GitHub Pages can find it)
       - name: Copy index.html to dist/
         run: cp src/index.html dist/index.html
 
@@ -55,20 +55,12 @@ jobs:
           artifact_name: github-pages
           preview: true
 
-      # 9. Post a comment on the PR with the deployment URL (only if not a fork)
+      # 9. Post a comment on the PR with the deployment URL (only if the PR is not from a fork)
       - name: Comment on PR with deployment URL
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-        uses: actions/github-script@v6
+        uses: peter-evans/create-or-update-comment@v3
         with:
-          script: |
-            const pageUrl = "${{ steps.deployment.outputs.page_url }}";
-            if (pageUrl) {
-              github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: `🚀 **Pages Preview Deployment:** [View Deployment](${pageUrl})`
-              });
-            } else {
-              core.info('No deployment URL available.');
-            }
+          token: ${{ secrets.COMMENT_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            🚀 **Pages Preview Deployment:** [View Deployment](${{ steps.deployment.outputs.page_url }})
