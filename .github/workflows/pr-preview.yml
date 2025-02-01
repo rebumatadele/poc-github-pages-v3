@@ -55,9 +55,9 @@ jobs:
           artifact_name: github-pages
           preview: true
 
-      # 9. Post a comment on the PR with the deployment URL (if available)
+      # 9. Post a comment on the PR with the deployment URL (only if not a fork)
       - name: Comment on PR with deployment URL
-        if: ${{ always() }}
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: actions/github-script@v6
         with:
           script: |
