@@ -1,1 +1,1 @@
-document.getElementById('root').textContent = 'Hello v2 from Webpack build';
+document.getElementById('root').textContent = 'Raising an issue as a Demo';
