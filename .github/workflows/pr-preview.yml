@@ -31,11 +31,11 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 5. Copy index.html from src/ to dist/ (so Pages finds it)
+      # 5. Copy index.html from src/ to dist/ (so GitHub Pages can find it)
       - name: Copy index.html to dist/
         run: cp src/index.html dist/index.html
 
-      # 6. Configure GitHub Pages (optional but recommended)
+      # 6. Configure GitHub Pages
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v3
 
@@ -54,12 +54,8 @@ jobs:
           artifact_name: github-pages
           preview: true
 
-      # 9. Show the deployment URL (if available)
-      - name: Show Deployment URL
+      # 9. Write the deployment URL to the job summary
+      - name: Write deployment URL to job summary
         run: |
-          URL="${{ steps.deployment.outputs.page_url }}"
-          if [ -z "$URL" ]; then
-            echo "No deployment URL available (preview mode may not output one)."
-          else
-            echo "Pages preview URL: $URL"
-          fi
+          echo "## Pages Preview Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "[View Deployment](${{ steps.deployment.outputs.page_url }})" >> $GITHUB_STEP_SUMMARY
