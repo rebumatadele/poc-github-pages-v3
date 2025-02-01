@@ -2,6 +2,7 @@
 node_modules/
 
 # Ignore build output
+dist/
 
 # Ignore logs
 npm-debug.log*

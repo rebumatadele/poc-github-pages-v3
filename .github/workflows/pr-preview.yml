@@ -32,9 +32,16 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      # 5️⃣ Debug: List `dist/` contents before uploading
-      - name: List contents of `dist/`
-        run: ls -la dist
+      # 5️⃣ Debug: Check if `dist/` exists before uploading
+      - name: Debug: Check dist folder
+        run: |
+          if [ -d dist ]; then
+            echo "✅ dist directory exists"
+            ls -la dist
+          else
+            echo "❌ dist directory is missing"
+            exit 1
+          fi
 
       # 6️⃣ Ensure `dist/` exists before uploading
       - name: Ensure dist directory exists
@@ -50,6 +57,13 @@ jobs:
 
       # 9️⃣ Upload the build output (`dist/`) as an artifact
       - name: Upload Pages Artifact
+        run: |
+          if [ -d dist ]; then
+            echo "✅ Uploading dist folder..."
+          else
+            echo "❌ dist folder not found. Cannot upload!"
+            exit 1
+          fi
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'dist'
