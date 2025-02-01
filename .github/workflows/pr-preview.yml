@@ -52,6 +52,8 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           artifact_name: github-pages
+          # Use the PR number (or branch, etc.) for the environment name:
+          environment: pr-${{ github.event.pull_request.number }}
           preview: true
 
       # 9. Write the deployment URL to the job summary
