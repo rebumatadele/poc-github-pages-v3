@@ -54,12 +54,20 @@ jobs:
           artifact_name: github-pages
           preview: true
 
-      # 9. Show the deployment URL (if available)
-      - name: Show Deployment URL
-        run: |
-          URL="${{ steps.deployment.outputs.page_url }}"
-          if [ -z "$URL" ]; then
-            echo "No deployment URL available (preview mode may not output one)."
-          else
-            echo "Pages preview URL: $URL"
-          fi
+      # 9. Post a comment on the PR with the deployment URL (if available)
+      - name: Comment on PR with deployment URL
+        if: ${{ always() }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pageUrl = "${{ steps.deployment.outputs.page_url }}";
+            if (pageUrl) {
+              github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `🚀 **Pages Preview Deployment:** [View Deployment](${pageUrl})`
+              });
+            } else {
+              core.info('No deployment URL available.');
+            }
