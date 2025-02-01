@@ -25,49 +25,66 @@ jobs:
           node-version: 16
 
       # 3️⃣ Install dependencies (force legacy peer deps)
-      - name: Install dependencies (force legacy peer deps)
+      - name: Install dependencies (legacy)
         run: npm install --legacy-peer-deps
 
-      # 4️⃣ Run Webpack build (creates `dist/bundle.js`)
+      # 4️⃣ Run Webpack build (should create dist/bundle.js)
       - name: Build the project
         run: npm run build
 
-      # 5️⃣ Debug: List contents of `dist/` folder after build
-      - name: Debug: List contents of dist/
+      # 5️⃣ Debug: List contents of dist/ folder after build
+      - name: Debug: List dist folder after build
         run: |
-          if [ -d dist ]; then
-            echo "✅ dist directory exists"
-            ls -la dist
+          echo "Listing dist folder after build:"
+          ls -la dist || echo "No dist folder found!"
+
+      # 6️⃣ Debug: Check if dist/bundle.js exists
+      - name: Debug: Check for dist/bundle.js
+        run: |
+          if [ -f dist/bundle.js ]; then
+            echo "✅ dist/bundle.js exists."
           else
-            echo "❌ dist directory is missing"
+            echo "❌ dist/bundle.js is missing!"
             exit 1
           fi
 
-      # 6️⃣ Ensure `dist/` exists (create if missing)
+      # 7️⃣ Ensure the dist/ directory exists (create if missing)
       - name: Ensure dist directory exists
         run: mkdir -p dist
 
-      # 7️⃣ Copy index.html from `src/` to `dist/` for GitHub Pages
+      # 8️⃣ Debug: Check if src/index.html exists
+      - name: Debug: Check for src/index.html
+        run: |
+          if [ -f src/index.html ]; then
+            echo "✅ src/index.html exists."
+          else
+            echo "❌ src/index.html is missing!"
+            exit 1
+          fi
+
+      # 9️⃣ Copy index.html from src/ to dist/ for GitHub Pages
       - name: Copy index.html to dist/
         run: cp src/index.html dist/index.html
 
-      # 8️⃣ Debug: List contents of `dist/` folder after copying index.html
-      - name: Debug: List contents of dist/ after copying index.html
-        run: ls -la dist
+      # 🔟 Debug: List contents of dist/ folder after copying index.html
+      - name: Debug: List dist folder after copying index.html
+        run: |
+          echo "Listing dist folder after copying index.html:"
+          ls -la dist
 
-      # 9️⃣ Configure GitHub Pages
+      # 1️⃣1️⃣ Configure GitHub Pages
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v3
 
-      # 🔟 Upload the build output (`dist/`) as an artifact
+      # 1️⃣2️⃣ Upload the build output (dist/) as an artifact
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'dist'
-          name: 'site-artifact'
+          path: dist
+          name: site-artifact
 
-      # 1️⃣1️⃣ Deploy the preview to GitHub Pages
+      # 1️⃣3️⃣ Deploy the preview to GitHub Pages
       - name: Deploy to GitHub Pages (Preview Mode)
         uses: actions/deploy-pages@v3
         with:
-          artifact_name: 'site-artifact'
+          artifact_name: site-artifact
