@@ -4,7 +4,6 @@ on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
   push:
-    # Optional: trigger also on pushes to branches if desired
     branches:
       - '*'
 
@@ -17,7 +16,7 @@ jobs:
   build-and-preview:
     runs-on: ubuntu-latest
     env:
-      # For PR events, github.head_ref is set; fallback to github.ref_name otherwise.
+      # For pull requests, github.head_ref is set; fallback to github.ref_name otherwise.
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     steps:
       # 1. Checkout the repository.
@@ -34,34 +33,18 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      # 4. Run the build (your bundler should output to the "dist/" folder).
+      # 4. Build project (make sure your build script outputs to "dist").
       - name: Build project
         run: npm run build
 
       # 5. (Optional) Copy additional files so GitHub Pages can find them.
       - name: Copy index.html to dist/
         run: cp src/index.html dist/index.html
-      
-      - name: Prepare branch build directory
-        run: |
-          mkdir -p builds/${BRANCH_NAME}
-          cp -R dist/* builds/${BRANCH_NAME}/
 
-      # 6. Debug: List the contents of the build directory.
+      # 6. Debug: List the contents of the build output directory.
       - name: List build artifacts
         run: ls -alR dist
 
-      # 7. Deploy the build output to GitHub Pages.
-      #    This uses several options:
-      #      - publish_branch: target branch (default: gh-pages)
-      #      - publish_dir: source directory (here, "dist")
-      #      - destination_dir: subdirectory on the publishing branch (set to the branch name)
-      #      - exclude_assets: filter out .github files (optional)
-      #      - allow_empty_commit: to force a commit if needed
-      #      - keep_files: to preserve existing files from other branches
-      #      - disable_nojekyll: to prevent GitHub Pages from ignoring files/folders starting with underscores
-      #      - user_name & user_email: custom git config values for the commit
-      #      - commit_message: custom commit message including the branch name and SHA.
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -77,7 +60,7 @@ jobs:
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Deploy preview for branch '${{ env.BRANCH_NAME }}' (${GITHUB_SHA})"
 
-      # 8. Write a job summary with the preview URL.
+      # 8. Write a job summary with the deployment URL.
       - name: Write deployment URL to job summary
         run: |
           echo "## Pages Preview Deployment \`${{ env.BRANCH_NAME }}\`" >> $GITHUB_STEP_SUMMARY
