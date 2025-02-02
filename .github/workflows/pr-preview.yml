@@ -3,9 +3,6 @@ name: Pull Request Preview
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
-  push:
-    branches:
-      - '*'
 
 permissions:
   contents: write
