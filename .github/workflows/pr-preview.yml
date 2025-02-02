@@ -48,14 +48,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: dist
-          destination_dir: ${{ env.BRANCH_NAME }}
-          exclude_assets: '.github'
-          allow_empty_commit: true
-          keep_files: true
-          disable_nojekyll: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: "Deploy preview for branch '${{ env.BRANCH_NAME }}' (${GITHUB_SHA})"
+          destination_dir: dynamic
 
       # 8. Write a job summary with the deployment URL.
       - name: Write deployment URL to job summary
