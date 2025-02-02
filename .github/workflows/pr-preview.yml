@@ -48,7 +48,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: dist
-          destination_dir: dynamic
+          destination_dir: ${{ env.BRANCH_NAME }}
+          keep_files: true
+          disable_nojekyll: true
 
       # 8. Write a job summary with the deployment URL.
       - name: Write deployment URL to job summary

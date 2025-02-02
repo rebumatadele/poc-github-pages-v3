@@ -1,1 +1,1 @@
-document.getElementById('root').textContent = 'testing dynamic implementation';
+document.getElementById('root').textContent = 'dynamic implementation';
