@@ -13,7 +13,7 @@ jobs:
   build-and-preview:
     runs-on: ubuntu-latest
     env:
-      # For PR events, github.head_ref is set.
+      # For PR events, github.head_ref is set; otherwise fallback to github.ref_name.
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     steps:
       # 1. Checkout the repository.
@@ -44,17 +44,22 @@ jobs:
           mkdir -p builds/${BRANCH_NAME}
           cp -R dist/* builds/${BRANCH_NAME}/
 
-      # 7. Deploy the builds/ folder to GitHub Pages incrementally.
-      #    Because keep_files is true, the action updates only files present in builds/
-      #    while leaving other folders (for other branches) untouched.
+      # 7. Debug: List the contents of the builds directory to verify the branch folder and its files.
+      - name: List build artifacts
+        run: ls -alR builds
+
+      # 8. Deploy the builds/ folder to GitHub Pages incrementally.
+      #    The keep_files flag ensures that the action updates only files present in builds/,
+      #    leaving any other branch folders intact.
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: builds
           keep_files: true
+          allow_empty_commit: true  # (Optional: helps to force a commit for debugging)
 
-      # 8. Write a summary with a link to the branch-specific preview.
+      # 9. Write a summary with a link to the branch-specific preview.
       - name: Write deployment URL to job summary
         run: |
           echo "## Pages Preview Deployment \`${{ env.BRANCH_NAME }}\`" >> $GITHUB_STEP_SUMMARY
