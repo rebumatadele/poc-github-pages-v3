@@ -57,5 +57,5 @@ jobs:
       # 8. Write a summary with a link to the branch-specific preview.
       - name: Write deployment URL to job summary
         run: |
-          echo "## Pages Preview Deployment \`${BRANCH_NAME}\`" >> $GITHUB_STEP_SUMMARY
-          echo "[View Deployment](https://rebumatadele.github.io/poc-github-pages-v3/${BRANCH_NAME})" >> $GITHUB_STEP_SUMMARY
+          echo "## Pages Preview Deployment \`${{ env.BRANCH_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "[View Deployment](https://rebumatadele.github.io/poc-github-pages-v3/${{ env.BRANCH_NAME }})" >> $GITHUB_STEP_SUMMARY
