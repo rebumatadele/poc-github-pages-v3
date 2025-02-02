@@ -41,6 +41,11 @@ jobs:
       # 5. (Optional) Copy additional files so GitHub Pages can find them.
       - name: Copy index.html to dist/
         run: cp src/index.html dist/index.html
+      
+      - name: Prepare branch build directory
+        run: |
+          mkdir -p builds/${BRANCH_NAME}
+          cp -R dist/* builds/${BRANCH_NAME}/
 
       # 6. Debug: List the contents of the build directory.
       - name: List build artifacts
