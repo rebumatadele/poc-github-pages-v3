@@ -55,7 +55,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: builds
+          publish_dir: builds/{{ env.BRANCH_NAME }}
           keep_files: true
           allow_empty_commit: true  # Optional: useful for debugging if no changes are detected.
           disable_nojekyll: true    # Prevent GitHub's Jekyll from ignoring certain files/folders
