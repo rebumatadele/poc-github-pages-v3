@@ -55,5 +55,6 @@ jobs:
       # 8. Write a job summary with the deployment URL.
       - name: Write deployment URL to job summary
         run: |
+          REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
           echo "## Pages Preview Deployment \`${{ env.BRANCH_NAME }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "[View Deployment](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ env.BRANCH_NAME }}/)" >> $GITHUB_STEP_SUMMARY
+          echo "[View Deployment](https://${GITHUB_REPOSITORY_OWNER}.github.io/${REPO_NAME}/${{ env.BRANCH_NAME }}/)" >> $GITHUB_STEP_SUMMARY
