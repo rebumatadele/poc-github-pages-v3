@@ -13,51 +13,52 @@ jobs:
   build-and-preview:
     runs-on: ubuntu-latest
     env:
-      # For PR events, github.head_ref is set; otherwise fallback to github.ref_name.
+      # For PR events, github.head_ref is the branch name of the PR;
+      # otherwise, fallback to github.ref_name if needed.
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     steps:
-      # 1. Checkout the repository.
-      - name: Checkout code
+      # 1. Check out the repository
+      - name: Check out code
         uses: actions/checkout@v3
 
-      # 2. Set up Node.js (version 16).
+      # 2. Set up Node.js (version 16)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
 
-      # 3. Install dependencies (using legacy peer deps to avoid conflicts).
+      # 3. Install dependencies
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      # 4. Run the build (your bundler should output to the dist/ folder).
+      # 4. Build (should output to `dist/`)
       - name: Build project
         run: npm run build
 
-      # 5. Copy index.html (or other necessary files) so Pages can find it.
-      - name: Copy index.html to dist/
+      # 5. Copy index.html into dist/ if needed
+      - name: Copy index.html
         run: cp src/index.html dist/index.html
 
-      # 6. Prepare a folder named after the branch inside a temporary builds/ directory.
-      - name: Prepare branch build directory
+      # 6. Place the build in a folder named after the branch
+      - name: Prepare branch folder
         run: |
           mkdir -p builds/${BRANCH_NAME}
           cp -R dist/* builds/${BRANCH_NAME}/
 
-      # 7. Debug: List the contents of the builds directory to verify the branch folder and its files.
-      - name: List build artifacts
+      # 7. List what's inside `builds/` to confirm
+      - name: Debug: List build artifacts
         run: ls -alR builds
 
-      # 8. Deploy the builds/ folder to GitHub Pages incrementally.
-      #    The keep_files flag ensures that the action updates only files present in builds/,
-      #    leaving any other branch folders intact.
-      - name: Deploy to GitHub Pages
+      # 8. Publish entire `builds/` folder to `gh-pages` branch
+      #    This will place each subfolder (like `dynamic`) at the root of gh-pages.
+      - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: builds
-          keep_files: true
-          allow_empty_commit: true  # (Optional: helps to force a commit for debugging)
+          keep_files: true          # Keep other branch folders
+          allow_empty_commit: true  # Useful if no changes are detected
+          disable_nojekyll: true    # Prevent GitHub's Jekyll from ignoring certain files/folders
 
       # 9. Write a summary with a link to the branch-specific preview.
       - name: Write deployment URL to job summary
